@@ -1,7 +1,5 @@
 # Taller Entregable 2: Pipeline de CI con Python, GitHub Actions, Docker y Herramientas Open Source
 
-> **Enunciado vigente para 20262.** Evaluación: [rúbrica oficial del Taller 2](../Rubrica_Taller_2.md). Las guías docentes y copias de las unidades son material de apoyo y pueden corresponder a versiones anteriores.
-
 En este taller construiremos un pipeline de Integración Continua (CI) para una aplicación Python simple, utilizando GitHub Actions, Docker y herramientas open source.  Aprenderás a:
 
 *   Analizar la calidad y seguridad de tu código con Pylint, Flake8, Black y medir la cobertura con Coverage.py.
@@ -87,6 +85,10 @@ Un pipeline de CI es un proceso automatizado que se ejecuta cada vez que se real
 ## 3. Configuración del Proyecto
 
 1.  **Crea un nuevo repositorio público en GitHub (lo hace el propietario):**  Llámalo, por ejemplo, `cicd-pipeline-python`. Usa un nombre **en minúsculas**: el pipeline usará el nombre del repositorio como nombre de la imagen en Docker Hub, y Docker no acepta mayúsculas en ese nombre.
+
+   > **Actividad informativa (no evaluada) — Dependabot alerts:** En el repositorio, abre **Security and quality → Overview**. En la tarjeta **Dependabot alerts**, haz clic en **Enable Dependabot alerts**. GitHub te avisará si detecta vulnerabilidades conocidas en dependencias declaradas por el proyecto, por ejemplo en `requirements.txt` o `requirements-dev.txt`. Esto complementa SonarCloud: Dependabot revisa las dependencias; SonarCloud analiza el código del proyecto y la cobertura.
+   >
+   > Activar las alertas no actualiza las dependencias ni crea Pull Requests automáticamente. Para este taller, activa solo **Dependabot alerts**; no es necesario habilitar las actualizaciones de seguridad automáticas. Puede que no aparezcan alertas, y eso no significa que la función esté mal configurada. Esta actividad es informativa y no hace parte de la calificación.
 
 2.  **Agrega a tus compañeros como colaboradores (lo hace el propietario):** En el repositorio ve a **Settings → Collaborators → Add people**, busca el usuario de GitHub de cada compañero y envíale la invitación. Cada compañero debe **aceptar la invitación** (llega por correo y en las notificaciones de GitHub). Sin este paso no podrán hacer push de ramas ni aprobar Pull Requests en la sección 9.
 
