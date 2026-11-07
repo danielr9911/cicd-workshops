@@ -1,7 +1,5 @@
 # Taller Entregable 3: Despliegue Continuo (CD) con AWS ECS e Infraestructura como Código
 
-> **Enunciado vigente para 20262.** Evaluación: [rúbrica oficial del Taller 3](../Rubrica_Taller_3.md). Las guías docentes y copias de las unidades son material de apoyo y pueden corresponder a versiones anteriores.
-
 Este taller es una continuación del Taller 2, donde construimos un pipeline de Integración Continua (CI) que genera una imagen Docker de nuestra aplicación. Ahora, nos enfocaremos en la **Entrega Continua (Continuous Delivery)** y el **Despliegue Continuo (Continuous Deployment)**, automatizando el despliegue de esa imagen Docker a **AWS Elastic Container Service (ECS)**, primero a un entorno de **Staging** y luego a **Producción**, utilizando **Infraestructura como Código (IaC)** con **Terraform**.
 
 Te invito a que investigues un poco sobre estos servicios y conceptos antes de comenzar, ya que son fundamentales para el desarrollo moderno de software y la entrega continua.
