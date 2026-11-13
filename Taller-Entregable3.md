@@ -1,5 +1,7 @@
 # Taller Entregable 3: Despliegue Continuo (CD) con AWS ECS e Infraestructura como Código
 
+> **Enunciado vigente para 20262.** Evaluación: [rúbrica oficial del Taller 3](../Rubrica_Taller_3.md). Las guías docentes y copias de las unidades son material de apoyo y pueden corresponder a versiones anteriores.
+
 Este taller es una continuación del Taller 2, donde construimos un pipeline de Integración Continua (CI) que genera una imagen Docker de nuestra aplicación. Ahora, nos enfocaremos en la **Entrega Continua (Continuous Delivery)** y el **Despliegue Continuo (Continuous Deployment)**, automatizando el despliegue de esa imagen Docker a **AWS Elastic Container Service (ECS)**, primero a un entorno de **Staging** y luego a **Producción**, utilizando **Infraestructura como Código (IaC)** con **Terraform**.
 
 Te invito a que investigues un poco sobre estos servicios y conceptos antes de comenzar, ya que son fundamentales para el desarrollo moderno de software y la entrega continua.
@@ -15,7 +17,11 @@ Aquí algunos links útiles para ello:
 * **Docker**: Plataforma para desarrollar, enviar y ejecutar aplicaciones en contenedores. Permite empaquetar aplicaciones y sus dependencias en un solo contenedor, asegurando que funcionen de manera consistente en diferentes entornos.
 
 ## Pre requisitos y modalidad de trabajo
-* **Equipos de 3 integrantes, los mismos del Taller 2.** El **propietario** del repositorio del Taller 2 es también el propietario en este taller: usa sus cuentas de GitHub, Docker Hub y SonarCloud, y su cuenta de **AWS Academy** para desplegar. Los otros dos integrantes participan como colaboradores (Pull Requests, revisiones y aprobaciones). Las credenciales de AWS son personales y **nunca se comparten**, ni siquiera dentro del equipo.
+* **Equipos de 3 integrantes, exactamente los mismos del Taller 2**, y cada equipo entrega **un único repositorio público**. El grupo que creó el profesor en EAFIT Interactiva para el Taller 2 es el mismo que se usa en este taller y en el proyecto final, así que no hace falta volver a registrarlo. Igual que en el Taller 2:
+  * **Secciones 7.1 a 7.9: cada integrante trabaja en su propio repositorio**, con sus propias cuentas de GitHub, Docker Hub, SonarCloud y **AWS Academy**. Así todos practican cada paso, y si a alguien algo no le funciona, el equipo puede continuar con otro repositorio. Cada uno parte de su repositorio del Taller 2; si el suyo no quedó funcionando, puede partir del repositorio que el equipo entregó en el Taller 2 (sección 7.1).
+  * **Sección 7.10 en adelante: el equipo elige un solo repositorio** (uno que cumpla el punto de control de la sección 7.9). Su dueño pasa a ser el **propietario**, y los otros dos integrantes se agregan como **colaboradores** (Pull Requests, revisiones y aprobaciones). **Ese es el único repositorio que se entrega y se califica**; los demás sirven para aprender y como respaldo, y no se revisan.
+  * En todos los repositorios, `AUTOR` y la sección **Integrantes** del README tienen los nombres de los 3 integrantes, para que no importe cuál se entregue.
+  * Las credenciales de AWS son personales y **nunca se comparten**, ni siquiera dentro del equipo.
 * Un cambio de equipo, propietario o cantidad de integrantes requiere autorización previa del docente; actualicen `AUTOR`, Integrantes y la distribución de roles según lo autorizado.
 * Haber finalizado el Taller 2 y tener los artefactos desarrollados en ese taller (app, Dockerfile, pruebas, `requirements.txt` y `requirements-dev.txt`, pipeline de CI, regla de protección de `main`, etc.). En la sección 7.1 crearás un repositorio nuevo a partir de una copia del Taller 2, que quedará intacto.
 * Instalar AWS CLI. Puedes seguir la guía oficial [aquí](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).
@@ -211,7 +217,7 @@ En el pipeline de GitHub Actions no usaremos `aws configure`. En su lugar, la ac
 
 ## 7. Implementación del Pipeline CD con Staging y Producción en AWS ECS usando Terraform
 
-**Roles en esta sección:** las secciones 7.1 a 7.11 las realiza el **propietario**, porque usan sus cuentas de GitHub, Docker Hub, SonarCloud y AWS Academy. Los otros dos integrantes acompañan y revisan cada paso con él (por ejemplo, en una llamada compartiendo pantalla). **Las credenciales de AWS nunca se comparten**, ni siquiera dentro del equipo. La sección 7.12 la realizan los **colaboradores**.
+**Roles en esta sección:** las secciones 7.1 a 7.9 las realiza **cada integrante en su propio repositorio**, con sus cuentas de GitHub, Docker Hub, SonarCloud y AWS Academy (pueden apoyarse entre ustedes, por ejemplo, en una llamada compartiendo pantalla). **Las credenciales de AWS nunca se comparten**, ni siquiera dentro del equipo. Al inicio de la sección 7.10 el equipo elige el repositorio que entregará: las secciones 7.10 y 7.11 las realiza su **propietario**, y la sección 7.12 los **colaboradores**.
 
 ### 7.1 Crea el repositorio del Taller 3 a partir del Taller 2
 
@@ -219,16 +225,16 @@ Como el Taller 2 se califica por separado, **no se modifica**: el Taller 3 se tr
 
 1. En GitHub crea un repositorio **público** y **vacío** llamado `cicd-pipeline-python-cd`. **No** agregues README, `.gitignore` ni licencia: si el repositorio no está vacío, el primer push será rechazado. Usa solo minúsculas: el nombre de la imagen Docker se forma con el nombre del repositorio y Docker Hub no acepta mayúsculas.
 
-2. Clona el repositorio del Taller 2 en una carpeta nueva y cambia su destino (`origin`) al repositorio nuevo:
+2. Clona el repositorio del Taller 2 en una carpeta nueva y cambia su destino (`origin`) a **tu** repositorio nuevo. Puedes partir de **tu propio** repositorio del Taller 2 o, si el tuyo no quedó funcionando, del repositorio que el equipo **entregó** en el Taller 2 (este último incluye además las pruebas del Pull Request de la sección 9):
 
-```bash
-git clone https://github.com/USUARIO_PROPIETARIO/cicd-pipeline-python.git cicd-pipeline-python-cd
-cd cicd-pipeline-python-cd
-git remote set-url origin https://github.com/USUARIO_PROPIETARIO/cicd-pipeline-python-cd.git
-git remote -v
-```
+    ```bash
+    git clone https://github.com/USUARIO_TALLER2/cicd-pipeline-python.git cicd-pipeline-python-cd
+    cd cicd-pipeline-python-cd
+    git remote set-url origin https://github.com/TU_USUARIO/cicd-pipeline-python-cd.git
+    git remote -v
+    ```
 
-> **⚠️ Verifica la salida de `git remote -v` antes de continuar:** las dos líneas deben terminar en `cicd-pipeline-python-cd.git`. Si siguen apuntando a `cicd-pipeline-python.git`, el siguiente push modificaría tu entrega del Taller 2.
+    > **⚠️ Verifica la salida de `git remote -v` antes de continuar:** las dos líneas deben terminar en `cicd-pipeline-python-cd.git`. Si siguen apuntando a `cicd-pipeline-python.git`, el siguiente push modificaría la entrega del Taller 2. Reemplaza `USUARIO_TALLER2` por el usuario de GitHub dueño del repositorio del Taller 2 que vas a copiar, y `TU_USUARIO` por el tuyo.
 
 ```bash
 git push -u origin main
@@ -236,9 +242,7 @@ git push -u origin main
 
 > **Es normal que esta primera ejecución del pipeline falle** en la pestaña **Actions**: el repositorio nuevo aún no tiene secretos, variables ni proyecto de SonarCloud. Los configurarás en la sección 7.2.
 
-3. **Agrega a tus compañeros como colaboradores:** igual que en el Taller 2 (**Settings → Collaborators → Add people**). Cada compañero debe aceptar la invitación y clonar el repositorio **nuevo** (`cicd-pipeline-python-cd`).
-
-4. **Crea el entorno virtual e instala las dependencias** (la carpeta `venv/` no se copia porque está en el `.gitignore`):
+3. **Crea el entorno virtual e instala las dependencias** (la carpeta `venv/` no se copia porque está en el `.gitignore`):
 
 ```bash
 python -m venv venv
@@ -256,18 +260,18 @@ pip install -r requirements-dev.txt
 | Código, pruebas, `Dockerfile`, workflow, archivos de configuración | Sí | Ajustar `sonar.projectKey` (7.2) |
 | Historial de commits | Sí | Nada |
 | Secretos y variables de GitHub Actions | **No** | Crearlos de nuevo (7.2 y 7.8) |
-| Colaboradores | **No** | Invitarlos de nuevo (paso 3) |
+| Colaboradores | **No** | Invitarlos solo en el repositorio que elija el equipo (sección 7.10) |
 | Regla de protección `proteger-main` | **No** | Crearla de nuevo (7.10) |
 | Proyecto de SonarCloud | **No** | Crear uno nuevo (7.2) |
 | Repositorio de la imagen en Docker Hub | **No** | Se crea solo con el primer push de la imagen: `usuariodockerhub/cicd-pipeline-python-cd` |
-| Entorno virtual `venv/` | **No** | Crearlo (paso 4) |
+| Entorno virtual `venv/` | **No** | Crearlo (paso 3) |
 
 ### 7.2 Configura SonarCloud, secretos y variables del repositorio nuevo
 
-1. **Crea el proyecto en SonarCloud:** **My Projects → Analyze a new project**, selecciona `cicd-pipeline-python-cd`, haz clic en **Set Up** y elige **Number of days → 30**, igual que en el Taller 2.
+1. **Crea el proyecto en SonarCloud:** **My Projects → Analyze a new project**, selecciona `cicd-pipeline-python-cd`, haz clic en **Set Up** y finaliza el proceso igual que en el Taller 2.
     > Si el repositorio no aparece en la lista, la aplicación de SonarCloud en GitHub tiene acceso solo a algunos repositorios. En GitHub ve a la configuración de tu cuenta **Settings → Applications → Installed GitHub Apps → SonarQube Cloud → Configure**, agrega `cicd-pipeline-python-cd` y vuelve a SonarCloud.
 
-2. Igual que en el Taller 2: desactiva el **Automatic Analysis** (**Administration → Analysis Method**) y haz el proyecto **público** (**Administration → Visibility → Public**).
+2. Igual que en el Taller 2: desactiva el **Automatic Analysis** (**Administration → Analysis Method**), haz el proyecto **público** (**Administration → Permissions → Project visibility → Public - Anyone**) y configura el código nuevo en **Administration → New code → Number of days = 30**. Este ajuste hace que el Quality Gate evalúe también el código que traes del Taller 2.
 
 3. **Actualiza `sonar-project.properties`:** cambia la clave del proyecto por la del proyecto nuevo (puedes copiarla exacta desde **Information** en SonarCloud). La organización (`sonar.organization`) no cambia.
 
@@ -275,7 +279,7 @@ pip install -r requirements-dev.txt
 sonar.projectKey=[TU_USUARIO]_cicd-pipeline-python-cd
 ```
 
-> **⚠️ Si dejas la clave anterior**, el análisis de este repositorio se enviaría al proyecto del Taller 2 y cambiaría su resultado.
+> **⚠️ Si dejas la clave anterior**, el análisis de este repositorio se enviaría al proyecto del Taller 2 y cambiaría su resultado, afectando su calificación. Si usas el mismo usuario de GitHub, normalmente solo cambia el nombre del proyecto, que se deriva del nombre del repositorio.
 
 4. **Crea los secretos y variables:** los valores de los secretos de GitHub no se pueden leer ni copiar a otro repositorio, así que genera tokens nuevos como en el Taller 2 (sección 5.2, pasos 4 y 5): un token de SonarCloud y un token de Docker Hub. Luego, en **Settings → Secrets and variables → Actions** del repositorio nuevo crea:
     * **Secretos:** `SONAR_TOKEN` y `DOCKERHUB_TOKEN`.
@@ -332,7 +336,11 @@ git commit -m "Agregar endpoint /health y configurar SonarCloud del Taller 3"
 git push origin main
 ```
 
-5. **Revisa los Security Hotspots en el proyecto nuevo:** igual que en la primera ejecución del Taller 2, **es normal que el paso `SonarCloud Scan` falle**: para el proyecto nuevo todo el código es "nuevo" y los 2 hotspots que marcaste como *Safe* en el Taller 2 aparecen otra vez sin revisar (las revisiones no se copian entre proyectos). En SonarCloud, pestaña **Security Hotspots**, márcalos como **Safe** con los mismos comentarios del Taller 2 (sección 8, paso 5): *Protección CSRF deshabilitada* y *Métodos HTTP seguros e inseguros en la misma ruta*. Luego, en GitHub abre la ejecución fallida y usa **Re-run jobs → Re-run failed jobs**. Si el paso no falló, revisa los hotspots de todas formas: la evaluación tiene en cuenta que estén revisados.
+5. **Revisa los Security Hotspots en el proyecto nuevo:** el paso `SonarCloud Scan` puede fallar en esta primera ejecución aunque el código no tenga issues, porque SonarCloud puede no calcular el Quality Gate en el primer análisis (*Not computed*). En ambos casos el log puede mostrar `QUALITY GATE STATUS: FAILED`; abre el enlace `View details on https://sonarcloud.io/dashboard?id=...` y revisa **Analysis → Summary**:
+    * **Not computed:** no es un error de tu código. Después de revisar los hotspots que se indican abajo, en GitHub usa **Re-run jobs → Re-run failed jobs** para que SonarCloud vuelva a calcular el Quality Gate.
+    * **Failed:** el Quality Gate sí se calculó y el código no cumple. SonarCloud muestra las condiciones que fallaron; corrige los hallazgos antes de volver a ejecutar.
+
+    Igual que en la primera ejecución del Taller 2, los 2 hotspots que marcaste como *Safe* en el Taller 2 aparecen otra vez sin revisar (las revisiones no se copian entre proyectos). En SonarCloud, pestaña **Security Hotspots**, márcalos como **Safe** con los mismos comentarios del Taller 2 (sección 8, paso 5): *Protección CSRF deshabilitada* y *Métodos HTTP seguros e inseguros en la misma ruta*. Si el paso no falló, revisa los hotspots de todas formas: la evaluación tiene en cuenta que estén revisados.
 
 6. **Verifica la imagen en Docker Hub:** debe aparecer el repositorio `usuariodockerhub/cicd-pipeline-python-cd` con las etiquetas `latest` y SHA. Verifica que sea **público**. Esta imagen (con `/health`) es la que desplegarás manualmente en la sección 7.6; si no se publica, el health check del ALB fallará.
 
@@ -1255,14 +1263,20 @@ git push origin main
 > * **`deploy-*` con `already exists`:** ver el troubleshooting de la sección 7.6.
 > * **`test-staging` o `smoke-test-production` fallan en el paso de espera:** la versión nueva no quedó en servicio en 5 minutos. Revisa la pestaña `Events` del servicio ECS y los logs en CloudWatch (troubleshooting de la sección 7.6). Si ECS revirtió el despliegue, `/health` sigue mostrando el SHA anterior (sección 8).
 > * **`test-staging` falla en las pruebas de aceptación:** descarga el reporte `staging-acceptance-report` desde **Artifacts** de la ejecución.
+> * **`test-staging` falla en una sola prueba con `ReadTimeoutError ... read timeout=120` al abrir la página, y las demás pasan:** puede ser una falla intermitente de red entre el runner de GitHub y el ALB, o del navegador. Usa **Re-run failed jobs**. Si falla siempre, revisa que el ALB responda abriendo su URL en tu navegador.
 
 ✅ **Punto de control:** los 5 jobs están en verde, los dos ambientes responden en `/health` con el SHA del último commit y los Target Groups están `healthy`.
 
-### 7.10 Protege la rama `main`
+### 7.10 Elijan el repositorio del equipo y protejan la rama `main`
 
-Igual que en el Taller 2 (sección 9, paso 1): **Settings → Rules → Rulesets → New ruleset → New branch ruleset**, con nombre `proteger-main`, estado `Active`, objetivo **Include default branch**, sin **Bypass list**, y las reglas **Require a pull request before merging** (1 aprobación) y **Require status checks to pass** con el check `build-and-test` (aparece porque el pipeline ya se ejecutó en la sección 7.9).
+Hasta aquí cada integrante tiene su propio repositorio. Desde este punto **el equipo trabaja en un solo repositorio**, que es el que se entrega y se califica:
 
-Desde este momento todos los cambios entran a `main` mediante Pull Requests.
+1. **Elijan el repositorio:** cualquiera que cumpla el punto de control de la sección 7.9 (los 5 jobs en verde, los dos ambientes desplegados respondiendo en `/health` y Quality Gate `Passed`). Su dueño es, desde ahora, el **propietario**: el pipeline de ese repositorio usa sus cuentas de Docker Hub, SonarCloud y AWS Academy. Verifiquen que `AUTOR` y la sección **Integrantes** del README tengan los nombres de los 3 integrantes.
+2. **Agrega a tus compañeros como colaboradores (propietario):** igual que en el Taller 2 (**Settings → Collaborators → Add people**). Cada compañero debe **aceptar la invitación**; sin ella no podrán crear ramas, aprobar Pull Requests ni ser revisores del ambiente `production` (sección 7.11).
+3. **Clona el repositorio elegido (colaboradores):** cada colaborador clona **el repositorio del propietario** (`cicd-pipeline-python-cd`) en una carpeta nueva, crea su entorno virtual e instala las dependencias (sección 7.1, paso 3). No trabajes sobre tu propio repositorio: los cambios desde aquí deben quedar en el repositorio elegido. Los colaboradores no necesitan credenciales de AWS para esto: el pipeline del repositorio elegido usa los secretos del propietario.
+4. **Protege la rama `main` (propietario):** igual que en el Taller 2 (sección 9.2, paso 1): **Settings → Rules → Rulesets → New ruleset → New branch ruleset**, con nombre `proteger-main`, estado `Active`, objetivo **Include default branch**, sin **Bypass list**, y las reglas **Require a pull request before merging** (1 aprobación) y **Require status checks to pass** con el check `build-and-test` (aparece porque el pipeline ya se ejecutó en la sección 7.9).
+
+    Desde este momento todos los cambios entran a `main` mediante Pull Requests.
 
 ### 7.11 Agrega aprobación manual antes de Producción
 
